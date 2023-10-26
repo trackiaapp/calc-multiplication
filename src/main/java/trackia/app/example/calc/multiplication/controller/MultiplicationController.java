@@ -10,13 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import trackia.app.Trackia;
-import trackia.app.annotations.R;
 import trackia.app.example.calc.multiplication.service.MultiplicationService;
 import trackia.app.example.calc.multiplication.to.CalcRequest;
 import trackia.app.example.calc.multiplication.to.CalcResponse;
 import trackia.app.module.sla.Slable;
 import trackia.app.module.sysinfo.Infoable;
-import trackia.app.to.Journal;
 
 @RestController
 @AllArgsConstructor
@@ -26,18 +24,15 @@ public class MultiplicationController {
 	private final MultiplicationService service;
 	
 	@Trackia(
-          	value = "CONTROLLER_MULTIPLICATION",
       description = "Calc Multiplication TrackIA example",
-        collector = true, 
-  autoTransaction = true,
   		  	write = true
 	)
 	@Slable(3000)
 	@Infoable
 	
 	@PostMapping("multiplication")
-	public ResponseEntity<CalcResponse> multiplication(@R @Validated @RequestBody CalcRequest request, Journal journal) {
+	public ResponseEntity<CalcResponse> multiplication(@Validated @RequestBody CalcRequest request) {
 		log.info("multiplication start");
-		return new ResponseEntity<>(service.calc(request, journal), HttpStatus.OK);
+		return new ResponseEntity<>(service.calc(request), HttpStatus.OK);
 	}
 }
