@@ -12,10 +12,10 @@ import javax.validation.constraints.NotNull;
 @Data
 public class CalcRequest {
 	private String operation;
-
-	@NotNull(message = "Left valor es requerido")
+	
+	@NotNull(message = "Left value is required")
 	private Object left;
 	
-	@NotNull(message = "Right valor es requerido")
+	@NotNull(message = "Right value is required")
 	private Object right;
 }

@@ -10,7 +10,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>trackia.app.example.calc</groupId>
-	<artifactId>multiplication</artifactId>
+	<artifactId>Multiplication-1-0</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>multiplication</name>
 	<description>Trackia Multiplication Calc Demo</description>

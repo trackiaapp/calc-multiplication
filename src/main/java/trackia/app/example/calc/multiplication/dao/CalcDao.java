@@ -3,8 +3,6 @@ package trackia.app.example.calc.multiplication.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.HttpClientErrorException;
@@ -17,8 +15,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonSyntaxException;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import trackia.app.Trackia;
+import trackia.app.example.calc.multiplication.config.AppConfiguration;
 import trackia.app.example.calc.multiplication.to.CalcRequest;
 import trackia.app.example.calc.multiplication.to.CalcResponse;
 import trackia.app.exception.BussinesException;
@@ -27,18 +27,15 @@ import trackia.app.util.Util;
 
 @Repository
 @Log4j2
+@AllArgsConstructor
 public class CalcDao {
-	@Autowired private RestTemplateJournal restTemplate;
+	final RestTemplateJournal restTemplate;
+	final AppConfiguration appConfiguration;
 
 	private static final String OPERATOR_ADDITION = "+";
 	private static final String OPERATOR_SUBTRACTION = "-";
 	private static final String OPERATOR_MULTIPLICATION = "*";
 	private static final String OPERATOR_DIVISION = "/";
-	
-	@Value(value = "${app.addition:}")      private String urlAddition;
-	@Value(value = "${app.subtraction}")    private String urlSubtraction;
-	@Value(value = "${app.multiplication}") private String urlMultiplication;
-	@Value(value = "${app.division}")       private String urlDivision;
 	
 	@Trackia(value = "DAO_VALUE_CALC", description = "Calc Value ")
 	public Integer value(Object exp, String expPart) {
@@ -58,7 +55,8 @@ public class CalcDao {
 			final CalcRequest calcExp =  Util.toObject(Util.toJson(exp), CalcRequest.class);
 			operation = "[" + calcExp.getOperation() + "]";
 	    	
-	        return restTemplate.postForObject(getUrl(calcExp), exp, CalcResponse.class).getResult();
+			CalcResponse respose = restTemplate.postForObject(getUrl(calcExp), exp, CalcResponse.class);
+			return respose == null ?null :respose.getResult();
         
 		}catch(ResourceAccessException e) {
 			throw new BussinesException(HttpStatus.NOT_FOUND, "Servicio indisponible momentaneamente en operacion "+ operation, "0006", e);			
@@ -106,13 +104,13 @@ public class CalcDao {
 	
 	private String getUrl(CalcRequest calcExp) {
 		if(OPERATOR_ADDITION.equals(calcExp.getOperation())) {
-			return urlAddition;
+			return appConfiguration.getAddition();
 		}else if(OPERATOR_SUBTRACTION.equals(calcExp.getOperation())) {
-			return urlSubtraction;
+			return appConfiguration.getSubtraction();
 		}else if(OPERATOR_MULTIPLICATION.equals(calcExp.getOperation())) {
-			return urlMultiplication;
+			return appConfiguration.getMultiplication();
 		}else if(OPERATOR_DIVISION.equals(calcExp.getOperation())) {
-			return urlDivision;
+			return appConfiguration.getDivision();
 		
 		
 		}else if(calcExp.getOperation() == null) {
